@@ -1,8 +1,3 @@
-.PHONY: services
-services: docker-compose.override.yml
-	docker compose pull
-	DOCKER_BUILDKIT=1 docker compose build --pull
-
 .PHONY: up
 up: services
 	docker compose up -d --remove-orphans
@@ -11,11 +6,20 @@ up: services
 down:
 	docker compose down
 
+.PHONY: services
+services: docker-compose.override.yml
+	docker compose pull
+	DOCKER_BUILDKIT=1 docker compose build --pull
 
 .PHONY: install
 install: vendor
 	docker compose exec php /var/www/wait-for-it.sh mysql:3306 --timeout=120
 	docker compose exec php bin/console doctrine:migrations:migrate
+
+.PHONY: migration
+migration:
+	docker compose exec php /var/www/wait-for-it.sh mysql:3306 --timeout=120
+	docker compose exec php bin/console make:migration
 
 docker-compose.override.yml:
 	cp docker-compose.local.yml docker-compose.override.yml
