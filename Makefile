@@ -14,7 +14,7 @@ services: docker-compose.override.yml
 .PHONY: install
 install: vendor
 	docker compose exec php /var/www/wait-for-it.sh mysql:3306 --timeout=120
-	docker compose exec php bin/console doctrine:migrations:migrate
+	docker compose exec php bin/console doctrine:migrations:migrate --no-interaction
 
 .PHONY: migration
 migration:
